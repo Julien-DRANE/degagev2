@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <title>Lecture vidéo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050505;
+      --panel: rgba(255, 255, 255, 0.08);
+      --text: #f4f4f4;
+      --muted: rgba(244, 244, 244, 0.72);
+      --accent: #ffffff;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .shell {
+      position: relative;
+      width: 100vw;
+      height: 100dvh;
+      background: #000;
+    }
+
+    .title {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: calc(env(safe-area-inset-top) + 16px);
+      transform: translateX(-50%);
+      margin: 0;
+      padding: 10px 14px;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      color: var(--text);
+      font-size: clamp(18px, 3vw, 28px);
+      font-weight: 700;
+      text-align: center;
+      max-width: min(92vw, 900px);
+    }
+
+    .subtitle {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      top: calc(env(safe-area-inset-top) + 78px);
+      transform: translateX(-50%);
+      margin: 0;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.32);
+      backdrop-filter: blur(10px);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      max-width: min(92vw, 640px);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: #000;
+    }
+
+    .overlay {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      padding: env(safe-area-inset-top) 16px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      gap: 12px;
+    }
+
+    .badge {
+      pointer-events: none;
+      backdrop-filter: blur(10px);
+      background: var(--panel);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 1.2;
+      color: var(--text);
+      max-width: min(70vw, 560px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .controls {
+      pointer-events: auto;
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--panel);
+      color: var(--text);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .hint {
+      position: absolute;
+      left: 50%;
+      bottom: calc(env(safe-area-inset-bottom) + 16px);
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.45);
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      max-width: min(92vw, 720px);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <h1 class="title">Un mercredi pendant les vacances, dans le jardin avec les enfants</h1>
+    <p class="subtitle">Vidéo originale, non montée.</p>
+    <video id="player" controls playsinline preload="metadata">
+      <source src="31-d-gages-v2-compressed-211da4805a42.mp4" type="video/mp4" />
+      Votre navigateur ne supporte pas la lecture vidéo HTML5.
+    </video>
+
+    <div class="overlay">
+      <div class="badge" id="filename">31-d-gages-v2-compressed-211da4805a42.mp4</div>
+      <div class="controls">
+        <button type="button" id="fullscreenBtn">Plein écran</button>
+      </div>
+    </div>
+
+    <div class="hint">Lecture native, compatible mobile. Utilise le bouton ou les contrôles vidéo pour passer en plein écran.</div>
+  </main>
+
+  <script>
+    const video = document.getElementById('player');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    async function enterFullscreen() {
+      const container = video.parentElement;
+
+      if (container.requestFullscreen) {
+        await container.requestFullscreen();
+        return;
+      }
+
+      if (video.requestFullscreen) {
+        await video.requestFullscreen();
+        return;
+      }
+
+      if (video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      }
+    }
+
+    fullscreenBtn.addEventListener('click', () => {
+      enterFullscreen().catch(() => {
+        if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
