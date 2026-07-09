@@ -115,6 +115,8 @@
       pointer-events: auto;
       display: flex;
       gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     button {
@@ -128,6 +130,11 @@
       font: inherit;
       cursor: pointer;
       touch-action: manipulation;
+    }
+
+    button[data-active="true"] {
+      background: rgba(255, 255, 255, 0.92);
+      color: #000;
     }
 
     button:active {
@@ -153,15 +160,17 @@
 <body>
   <main class="shell">
     <h1 class="title">Un mercredi pendant les vacances, dans le jardin avec les enfants</h1>
-    <p class="subtitle">Vidéo originale, non montée.</p>
+    <p class="subtitle">Vidéos originales, non montées ni coupées.</p>
     <video id="player" controls playsinline preload="metadata">
-      <source src="d-gage-v32-compressed-b710d3073837.mp4" type="video/mp4" />
+      <source id="videoSource" src="d-gage-v32-compressed-b710d3073837.mp4" type="video/mp4" />
       Votre navigateur ne supporte pas la lecture vidéo HTML5.
     </video>
 
     <div class="overlay">
       <div class="badge" id="filename">d-gage-v32-compressed-b710d3073837.mp4</div>
       <div class="controls">
+        <button type="button" data-video="0" data-active="true">Vidéo 1</button>
+        <button type="button" data-video="1" data-active="false">Vidéo 2</button>
         <button type="button" id="fullscreenBtn">Plein écran</button>
       </div>
     </div>
@@ -171,7 +180,34 @@
 
   <script>
     const video = document.getElementById('player');
+    const source = document.getElementById('videoSource');
+    const filename = document.getElementById('filename');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const videoButtons = Array.from(document.querySelectorAll('button[data-video]'));
+
+    const videos = [
+      {
+        label: 'Vidéo 1',
+        file: 'd-gage-v32-compressed-b710d3073837.mp4',
+      },
+      {
+        label: 'Vidéo 2',
+        file: 'D-gage-apr-s-midi-08-07-26--compressed-86565ead0262.mp4',
+      },
+    ];
+
+    function loadVideo(index) {
+      const item = videos[index];
+      if (!item) return;
+
+      source.src = item.file;
+      filename.textContent = item.file;
+      video.load();
+
+      videoButtons.forEach((button) => {
+        button.dataset.active = String(Number(button.dataset.video) === index);
+      });
+    }
 
     async function enterFullscreen() {
       const container = video.parentElement;
@@ -191,6 +227,12 @@
       }
     }
 
+    videoButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        loadVideo(Number(button.dataset.video));
+      });
+    });
+
     fullscreenBtn.addEventListener('click', () => {
       enterFullscreen().catch(() => {
         if (video.webkitEnterFullscreen) {
@@ -198,6 +240,8 @@
         }
       });
     });
+
+    loadVideo(0);
   </script>
 </body>
 </html>
